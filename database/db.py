@@ -50,6 +50,21 @@ def verify_user(email, password):
     return None
 
 
+def get_user_by_id(user_id):
+    """
+    Retrieves user details by their ID.
+    """
+    conn = get_db()
+    try:
+        user = conn.execute(
+            "SELECT id, name, email, created_at FROM users WHERE id = ?",
+            (user_id,)
+        ).fetchone()
+        return user
+    finally:
+        conn.close()
+
+
 def init_db():
     """
     Initializes the database by creating the users and expenses tables.
