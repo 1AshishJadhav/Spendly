@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import sqlite3
-from database.db import init_db, seed_db, create_user, verify_user
+from database.db import init_db, seed_db, create_user, verify_user, get_user_by_id
 
 app = Flask(__name__)
 app.secret_key = "dev-secret-key-for-spendly"
@@ -85,7 +85,40 @@ def logout():
 
 @app.route("/profile")
 def profile():
-    return "Profile page — coming in Step 4"
+    user_id = session.get("user_id")
+    if not user_id:
+        return redirect(url_for("login"))
+
+    # Hardcoded mock data for UI validation phase
+    user = {
+        "name": "Demo User",
+        "email": "demo@spendly.com",
+        "member_since": "September 2026"
+    }
+
+    stats = {
+        "total_spent": "₹12,450.00",
+        "transactions": 42,
+        "top_category": "Food"
+    }
+
+    recent_transactions = [
+        {"date": "2026-09-20", "desc": "Lunch at Cafe", "cat": "Food", "amt": "-₹450.00"},
+        {"date": "2026-09-19", "desc": "Bus Fare", "cat": "Transport", "amt": "-₹20.00"},
+        {"date": "2026-09-18", "desc": "Monthly Internet", "cat": "Bills", "amt": "-₹799.00"},
+        {"date": "2026-09-17", "desc": "Pharmacy", "cat": "Health", "amt": "-₹1,200.00"},
+        {"date": "2026-09-15", "desc": "Cinema Ticket", "cat": "Entertainment", "amt": "-₹300.00"},
+    ]
+
+    categories = [
+        {"name": "Food", "spent": 4500, "percent": 36},
+        {"name": "Transport", "spent": 2100, "percent": 17},
+        {"name": "Bills", "spent": 3200, "percent": 26},
+        {"name": "Health", "spent": 1500, "percent": 12},
+        {"name": "Other", "spent": 1150, "percent": 9},
+    ]
+
+    return render_template("profile.html", user=user, stats=stats, transactions=recent_transactions, categories=categories)
 
 
 @app.route("/expenses/add")
